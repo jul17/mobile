@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A373E6"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:paddingLeft="100dp"
+    android:paddingTop="300dp"
+    android:paddingRight="100dp"
+    android:textColor="#FFFFFF"
+    tools:context=".WellcomeActivity">
+
+    <TextView
+        android:id="@+id/welcome_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/wellcome"
+        android:textColor="#F8F6F6" />
+
+    <TextView
+        android:id="@+id/name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:textColor="#FFFFFF"
+        android:layout_gravity = "center"/>
+
+    <TextView
+        android:id="@+id/email_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF" />
+</LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A373E6"
+    android:orientation="vertical"
+    android:paddingLeft="24dp"
+    android:paddingTop="300dp"
+    android:paddingRight="24dp"
+    android:textColor="#FFFFFF"
+    android:clearTaskOnLaunch = "true">
+
+
+    <EditText
+        android:id="@+id/sign_in_email"
+        style="@style/Widget.AppCompat.AutoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:hint="email"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress"
+        android:textColorHint="#FFFFFF" />
+
+    <EditText
+        android:id="@+id/sign_in_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:hint="@string/password"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:textCursorDrawable="@color/colorPrimaryDark"
+        tools:targetApi="o" />
+
+    <Button
+        android:id="@+id/button_sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:text="Sign In"
+        android:textAllCaps="false"
+        android:textColor="#7C4DFF"
+        tools:ignore="HardcodedText" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_google_button"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/text_view_sing_up"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="@string/don_t_have_account_sign_up"
+        android:textAlignment="center"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF"
+        android:textCursorDrawable="@color/colorAccent" />
+
+
+</LinearLayout>

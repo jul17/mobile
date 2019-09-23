@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MobileDevelopment</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="password">password</string>
+    <string name="Email" />
+    <string name="Password" />
+    <string name="MobileDevelopment" />
+    <string name="don_t_have_account_sign_up">Don\'t have account? Sign Up</string>
+    <string name="sign_in">Sign in</string>
+    <string name="email" />
+    <string name="wellcome">Wellcome</string>
+    <string name="name">name</string>
+</resources>
