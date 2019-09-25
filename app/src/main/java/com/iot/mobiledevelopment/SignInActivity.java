@@ -19,8 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 @SuppressWarnings("deprecation")
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText editSignInEmail, editSignInTextPassword, editSignInTextUserName, editSignInTextPhoneNumber;
-
+    private EditText editSignInEmail;
+    private EditText editSignInTextPassword;
     private FirebaseAuth auth;
 
     @Override
@@ -30,13 +30,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         editSignInEmail = findViewById(R.id.sign_in_email);
         editSignInTextPassword = findViewById(R.id.sign_in_password);
-        editSignInTextUserName = findViewById(R.id.sing_up_name);
-        editSignInTextPhoneNumber = findViewById(R.id.sign_up_phone);
 
         auth = FirebaseAuth.getInstance();
 
         findViewById(R.id.button_sign_in).setOnClickListener(this);
-
         findViewById(R.id.text_view_sing_up).setOnClickListener(this);
     }
 
@@ -45,15 +42,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         final String password = editSignInTextPassword.getText().toString();
 
         if (email.isEmpty() && password.isEmpty()) {
-            editSignInEmail.setError("Enter email");
-            editSignInTextPassword.setError("Enter password");
-            editSignInTextPassword.requestFocus();
-            editSignInEmail.requestFocus();
+            showEmailAndPawwsordErrorMessage();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editSignInEmail.setError("Invalid email address");
+            editSignInEmail.setError(getString(R.string.invalid_email));
             editSignInEmail.requestFocus();
             return;
         }
@@ -64,23 +58,36 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     onSuccess();
-                    clearFields();
                     auth.getCurrentUser();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void onSuccess() {
-        Toast.makeText(getApplicationContext(), "Authorisation is Success", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.success), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, WellcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
+        clearFields();
     }
 
-    private void clearFields() {
+
+    private void showEmailAndPawwsordErrorMessage(){
+        editSignInEmail.setError(getString(R.string.enter_email));
+        editSignInTextPassword.setError(getString(R.string.enter_password));
+        editSignInTextPassword.requestFocus();
+        editSignInEmail.requestFocus();
+    }
+    private void startSignUpActivity(){
+        Intent intent = new Intent(new Intent(this, SignUpActivity.class));
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
+    private void clearFields(){
         editSignInEmail.getText().clear();
         editSignInTextPassword.getText().clear();
     }
@@ -89,9 +96,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.text_view_sing_up:
-                Intent intent = new Intent(new Intent(this, SignUpActivity.class));
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                startSignUpActivity();
                 break;
             case R.id.button_sign_in:
                 signIn();

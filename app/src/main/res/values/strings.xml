@@ -11,4 +11,17 @@
     <string name="email" />
     <string name="wellcome">Wellcome</string>
     <string name="name">name</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="failure">Failure!</string>
+    <string name="success">Success Authorisation</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter password</string>
+    <string name="show_messg_invalid_email_address">Invalid email address</string>
+    <string name="show_messg_registered_user_err">This user is already registread</string>
+    <string name="show_messg_required_email">Email is required</string>
+    <string name="required_password">Password is required</string>
+    <string name="show_messg_required_name">User name is required</string>
+    <string name="show_messg_required_phone">Phone number is required</string>
+    <string name="show_messg_wrong_phone">Wrong phone number</string>
+    <string name="show_messg_passw_error">Minimim length of password should be 8</string>
 </resources>
