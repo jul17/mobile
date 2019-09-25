@@ -15,8 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 @SuppressWarnings("ALL")
 public class WellcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    TextView showUserNameTextView;
-    FirebaseAuth auth;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

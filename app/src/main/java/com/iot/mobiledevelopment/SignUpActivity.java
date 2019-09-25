@@ -24,10 +24,13 @@ import java.util.regex.Pattern;
 @SuppressWarnings("ALL")
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    final static Pattern PASSWORD_PATTERN = Pattern.compile(".{8}");
-    final static Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^380*.{10}");
-    private EditText editTextSignUpEmail, editTextSignUpPassword, editTextSignUpUserName, editSignUpTextPhoneNumber;
     private FirebaseAuth auth;
+    private EditText editTextSignUpEmail;
+    private EditText editTextSignUpPassword;
+    private EditText editTextSignUpUserName;
+    private EditText editSignUpTextPhoneNumber;
+    private static final Integer maxPasswordLength = 8;
+    private final static Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^380*.{10}");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,31 +57,31 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (email.isEmpty() && password.isEmpty() && phoneNumber.isEmpty() && userName.isEmpty()) {
-            validationErrorEmptyFields();
+            showErrorIsEmptyFields();
             return;
         } else if (email.isEmpty()) {
-            ifEmailIsEmptyError();
+            showEmailIsEmptyError();
             return;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextSignUpEmail.setError("Invalid email address");
+            editTextSignUpEmail.setError(getString(R.string.show_messg_invalid_email_address));
             editTextSignUpEmail.requestFocus();
             return;
         } else if (!PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches() && password.length() < 8) {
-            validationErrorPhoneNumber();
-            validationErrorPassword();
+            showPhoneNumberErrorValidation();
+            showPasswordErrorValidation();
             return;
-        } else if (password.length() < 8) {
-            validationErrorPassword();
+        } else if (password.length() < maxPasswordLength) {
+            showPasswordErrorValidation();
         } else if (Objects.requireNonNull(Objects.requireNonNull(user).getEmail()).equals(email)) {
-            editTextSignUpEmail.setError("This user is already registread");
+            editTextSignUpEmail.setError(getString(R.string.show_messg_registered_user_err));
             editTextSignUpEmail.requestFocus();
             return;
         } else if (phoneNumber.isEmpty() && userName.isEmpty()) {
-            ifPhoneNumberIsEmptyError();
-            ifUserNameIsEmptyError();
+            showPhoneNumberErrorIsEmpty();
+            showUseNameIsEmptyError();
             return;
         } else if (userName.isEmpty()) {
-            ifUserNameIsEmptyError();
+            showUseNameIsEmptyError();
             return;
         }
 
@@ -88,10 +91,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     onSuccess();
-                    clearFields();
                     auth.getCurrentUser();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Authorisation is Failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -99,10 +101,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void onSuccess() {
-        Toast.makeText(getApplicationContext(), "Authorisation is Success", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, WellcomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
+        startNexActivity(WellcomeActivity.class);
+        clearFields();
     }
 
     private void clearFields() {
@@ -112,41 +112,47 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editTextSignUpPassword.getText().clear();
     }
 
-    private void validationErrorEmptyFields() {
-        editTextSignUpEmail.setError("Email is required");
-        editTextSignUpPassword.setError("Password is required");
-        editTextSignUpUserName.setError("User name is required");
-        editSignUpTextPhoneNumber.setError("Phone number is required");
+    private void showErrorIsEmptyFields() {
+        editTextSignUpEmail.setError(getString(R.string.show_messg_required_email));
+        editTextSignUpPassword.setError(getString(R.string.required_password));
+        editTextSignUpUserName.setError(getString(R.string.show_messg_required_name));
+        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_required_phone));
         editTextSignUpEmail.requestFocus();
         editTextSignUpPassword.requestFocus();
         editSignUpTextPhoneNumber.requestFocus();
         editTextSignUpUserName.requestFocus();
     }
 
-    private void ifUserNameIsEmptyError() {
-        editTextSignUpUserName.setError("User name is required");
+    private void showUseNameIsEmptyError() {
+        editTextSignUpUserName.setError(getString(R.string.show_messg_required_name));
         editTextSignUpUserName.requestFocus();
     }
 
-    private void ifPhoneNumberIsEmptyError() {
-        editSignUpTextPhoneNumber.setError("Phone number is required");
+    private void showPhoneNumberErrorIsEmpty() {
+        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_required_phone));
         editSignUpTextPhoneNumber.requestFocus();
     }
 
-    private void ifEmailIsEmptyError() {
-        editTextSignUpEmail.setError("Email is required");
+    private void showEmailIsEmptyError() {
+        editTextSignUpEmail.setError(getString(R.string.show_messg_required_email));
         editTextSignUpEmail.requestFocus();
     }
 
 
-    private void validationErrorPhoneNumber() {
-        editSignUpTextPhoneNumber.setError("Wrong phone number");
+    private void showPhoneNumberErrorValidation() {
+        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_wrong_phone));
         editSignUpTextPhoneNumber.requestFocus();
     }
 
-    private void validationErrorPassword() {
-        editTextSignUpPassword.setError("Minimim length of password should be 8");
+    private void showPasswordErrorValidation() {
+        editTextSignUpPassword.setError(getString(R.string.show_messg_wrong_phone));
         editTextSignUpPassword.requestFocus();
+    }
+
+    private void startNexActivity(Class cls){
+        Intent intent = new Intent(this, cls);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     @Override
@@ -156,9 +162,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 signUp();
                 break;
             case R.id.text_view_sing_in:
-                Intent intent = new Intent(this, SignInActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
+                startNexActivity(SignInActivity.class);
                 break;
         }
     }
