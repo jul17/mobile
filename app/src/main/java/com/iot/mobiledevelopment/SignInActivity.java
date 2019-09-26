@@ -41,16 +41,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         final String email = editSignInEmail.getText().toString();
         final String password = editSignInTextPassword.getText().toString();
 
-        if (email.isEmpty() && password.isEmpty()) {
-            showEmailAndPawwsordErrorMessage();
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editSignInEmail.setError(getString(R.string.invalid_email));
-            editSignInEmail.requestFocus();
-            return;
-        }
+        validationSignInFields(email, password);
 
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
@@ -90,6 +81,19 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void clearFields(){
         editSignInEmail.getText().clear();
         editSignInTextPassword.getText().clear();
+    }
+
+    private void validationSignInFields(final String email, final String password){
+        if (email.isEmpty() && password.isEmpty()) {
+            showEmailAndPawwsordErrorMessage();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editSignInEmail.setError(getString(R.string.invalid_email));
+            editSignInEmail.requestFocus();
+            return;
+        }
     }
 
     @Override

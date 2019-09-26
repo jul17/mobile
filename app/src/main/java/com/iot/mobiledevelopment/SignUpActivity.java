@@ -56,6 +56,35 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         final String password = editTextSignUpPassword.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        validationSignUpFields(userName, phoneNumber, email, password, user);
+
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    onSuccess();
+                    auth.getCurrentUser();
+                } else {
+                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void onSuccess() {
+        startNexActivity(WellcomeActivity.class);
+        clearFields();
+    }
+
+    private void clearFields() {
+        editTextSignUpUserName.getText().clear();
+        editSignUpTextPhoneNumber.getText().clear();
+        editTextSignUpEmail.getText().clear();
+        editTextSignUpPassword.getText().clear();
+    }
+
+    private void validationSignUpFields(final String userName, final String phoneNumber, final String password, final String email, FirebaseUser user){
         if (email.isEmpty() && password.isEmpty() && phoneNumber.isEmpty() && userName.isEmpty()) {
             showErrorIsEmptyFields();
             return;
@@ -84,32 +113,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             showUseNameIsEmptyError();
             return;
         }
-
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    onSuccess();
-                    auth.getCurrentUser();
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
-
-    private void onSuccess() {
-        startNexActivity(WellcomeActivity.class);
-        clearFields();
-    }
-
-    private void clearFields() {
-        editTextSignUpUserName.getText().clear();
-        editSignUpTextPhoneNumber.getText().clear();
-        editTextSignUpEmail.getText().clear();
-        editTextSignUpPassword.getText().clear();
     }
 
     private void showErrorIsEmptyFields() {
