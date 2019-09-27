@@ -41,59 +41,68 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         final String email = editSignInEmail.getText().toString();
         final String password = editSignInTextPassword.getText().toString();
 
-        validationSignInFields(email, password);
+        if (validationSignInFields(email, password)) {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this,
+                    new OnCompleteListener<AuthResult>() {
 
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                onSuccess();
+                            } else {
+                                Toast.makeText(getApplicationContext(), getString(R.string.failure),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
 
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    onSuccess();
-                    auth.getCurrentUser();
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        }
+
     }
 
     private void onSuccess() {
         Toast.makeText(getApplicationContext(), getString(R.string.success), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, WellcomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
         clearFields();
     }
 
 
-    private void showEmailAndPawwsordErrorMessage(){
+    private void showEmailAndPawwsordErrorMessage() {
         editSignInEmail.setError(getString(R.string.enter_email));
         editSignInTextPassword.setError(getString(R.string.enter_password));
         editSignInTextPassword.requestFocus();
         editSignInEmail.requestFocus();
     }
-    private void startSignUpActivity(){
+
+    private void startSignUpActivity() {
         Intent intent = new Intent(new Intent(this, SignUpActivity.class));
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
-    private void clearFields(){
+    private void clearFields() {
         editSignInEmail.getText().clear();
         editSignInTextPassword.getText().clear();
     }
 
-    private void validationSignInFields(final String email, final String password){
+    private boolean validationSignInFields(final String email, final String password) {
+        boolean alldone = true;
+
         if (email.isEmpty() && password.isEmpty()) {
             showEmailAndPawwsordErrorMessage();
-            return;
+            return false;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editSignInEmail.setError(getString(R.string.invalid_email));
             editSignInEmail.requestFocus();
-            return;
+            return false;
         }
+
+        return alldone;
     }
 
     @Override

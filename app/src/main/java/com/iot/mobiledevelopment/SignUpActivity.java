@@ -1,6 +1,7 @@
 package com.iot.mobiledevelopment;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -16,6 +17,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -24,6 +28,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("ALL")
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private DatabaseReference mDatabase;
     private FirebaseAuth auth;
     private EditText editTextSignUpEmail;
     private EditText editTextSignUpPassword;
@@ -31,6 +36,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText editSignUpTextPhoneNumber;
     private static final Integer maxPasswordLength = 8;
     private final static Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^380*.{10}");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editSignUpTextPhoneNumber = findViewById(R.id.sign_up_phone);
 
         auth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         findViewById(R.id.button_sign_up).setOnClickListener(this);
         findViewById(R.id.text_view_sing_in).setOnClickListener(this);
@@ -56,20 +63,79 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         final String password = editTextSignUpPassword.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        validationSignUpFields(userName, phoneNumber, email, password, user);
+        if (validationSignUpFields(userName, phoneNumber, email, password, user)) {
+            if (auth.getCurrentUser() != null) {
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
+                        new OnCompleteListener<AuthResult>() {
 
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    onSuccess();
-                    auth.getCurrentUser();
-                } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.failure), Toast.LENGTH_LONG).show();
-                }
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    onSuccess();
+                                    saveUserInfo(userName, phoneNumber, email);
+                                    auth.getCurrentUser();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.failure),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
             }
-        });
+        }
+    }
+
+    private boolean validationSignUpFields(final String userName, final String phoneNumber,
+                                           final String password, final String email, FirebaseUser user) {
+
+        boolean alldone = true;
+
+        if (email.isEmpty() && password.isEmpty() && phoneNumber.isEmpty() && userName.isEmpty()) {
+            showErrorIsEmptyFields();
+            return false;
+        } else if (email.isEmpty()) {
+            showEmailIsEmptyError();
+            return false;
+        } else if (!PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches() && password.length() < 8) {
+            showPhoneNumberErrorValidation();
+            showPasswordErrorValidation();
+            return false;
+        } else if (Objects.requireNonNull(Objects.requireNonNull(user).getEmail()).equals(email)) {
+            editTextSignUpEmail.setError(getString(R.string.show_messg_registered_user_err));
+            editTextSignUpEmail.requestFocus();
+            return false;
+        } else if (phoneNumber.isEmpty() && userName.isEmpty()) {
+            showPhoneNumberErrorIsEmpty();
+            showUseNameIsEmptyError();
+            return false;
+        } else if (userName.isEmpty()) {
+            showUseNameIsEmptyError();
+            return false;
+        } else if (password.length() < maxPasswordLength) {
+            showPasswordErrorValidation();
+        }
+
+        return alldone;
+    }
+
+    private void saveUserInfo(final String userName, final String phoneNumber, final String email) {
+
+        UserInformation userInfo = new UserInformation(userName, phoneNumber, email);
+
+        userInfo.setEmail(email);
+        userInfo.setPhonenumber(phoneNumber);
+        userInfo.setUsername(userName);
+        mDatabase.child("UserNode").child(auth.getCurrentUser().getUid()).setValue(userInfo,
+                new DatabaseReference.CompletionListener() {
+                    public void onComplete(DatabaseError databaseError,
+                                           DatabaseReference databaseReference) {
+                        if (databaseError == null) {
+                            Toast.makeText(getApplicationContext(), getString(R.string.data_saved),
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
     }
 
     private void onSuccess() {
@@ -82,37 +148,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editSignUpTextPhoneNumber.getText().clear();
         editTextSignUpEmail.getText().clear();
         editTextSignUpPassword.getText().clear();
-    }
-
-    private void validationSignUpFields(final String userName, final String phoneNumber, final String password, final String email, FirebaseUser user){
-        if (email.isEmpty() && password.isEmpty() && phoneNumber.isEmpty() && userName.isEmpty()) {
-            showErrorIsEmptyFields();
-            return;
-        } else if (email.isEmpty()) {
-            showEmailIsEmptyError();
-            return;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextSignUpEmail.setError(getString(R.string.show_messg_invalid_email_address));
-            editTextSignUpEmail.requestFocus();
-            return;
-        } else if (!PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches() && password.length() < 8) {
-            showPhoneNumberErrorValidation();
-            showPasswordErrorValidation();
-            return;
-        } else if (password.length() < maxPasswordLength) {
-            showPasswordErrorValidation();
-        } else if (Objects.requireNonNull(Objects.requireNonNull(user).getEmail()).equals(email)) {
-            editTextSignUpEmail.setError(getString(R.string.show_messg_registered_user_err));
-            editTextSignUpEmail.requestFocus();
-            return;
-        } else if (phoneNumber.isEmpty() && userName.isEmpty()) {
-            showPhoneNumberErrorIsEmpty();
-            showUseNameIsEmptyError();
-            return;
-        } else if (userName.isEmpty()) {
-            showUseNameIsEmptyError();
-            return;
-        }
     }
 
     private void showErrorIsEmptyFields() {
@@ -152,7 +187,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editTextSignUpPassword.requestFocus();
     }
 
-    private void startNexActivity(Class cls){
+    private void startNexActivity(Class cls) {
         Intent intent = new Intent(this, cls);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);

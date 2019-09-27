@@ -24,4 +24,7 @@
     <string name="show_messg_required_phone">Phone number is required</string>
     <string name="show_messg_wrong_phone">Wrong phone number</string>
     <string name="show_messg_passw_error">Minimim length of password should be 8</string>
+    <string name="success_sign_in">Successfully signed in with: </string>
+    <string name="success_sign_out">Successfully signed out.</string>
+    <string name="data_saved">Data is saved successfully</string>
 </resources>
