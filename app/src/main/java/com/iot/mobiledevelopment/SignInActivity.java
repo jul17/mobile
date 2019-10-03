@@ -61,7 +61,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void onSuccess() {
-        Toast.makeText(getApplicationContext(), getString(R.string.success), Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, WellcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP |
                 Intent.FLAG_ACTIVITY_NO_HISTORY);

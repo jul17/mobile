@@ -11,22 +11,14 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 @SuppressWarnings("ALL")
 public class WellcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private FirebaseAuth auth;
-    private FirebaseDatabase mFirebaseDatabase;
     private TextView showUserNameTextView;
     private TextView showUserEmailTextView;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseReference myRef;
-    private  String userID;
 
 
     @Override
@@ -39,68 +31,22 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.wellcome_sign_out_button).setOnClickListener(this);
 
         auth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-        FirebaseUser user = auth.getCurrentUser();
-        userID = user.getUid();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    toastMessage(getString(R.string.success_sign_in) + user.getEmail());
-                } else {
-                    toastMessage(getString(R.string.success_sign_out));
-                }
-            }
-        };
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                showData(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void showData(DataSnapshot dataSnapshot){
-        for(DataSnapshot ds : dataSnapshot.getChildren()){
-            UserInformation uInfo = new UserInformation();
-            uInfo.setEmail(ds.child(userID).getValue(UserInformation.class).getEmail());
-            uInfo.setUsername(ds.child(userID).getValue(UserInformation.class).getUsername());
-
-            showUserEmailTextView.setText(uInfo.getEmail());
-            showUserNameTextView.setText(uInfo.getUsername());
+        FirebaseUser userCredentials = auth.getCurrentUser();
+        if (userCredentials != null) {
+            showUserEmailTextView.setText(userCredentials.getEmail());
+            showUserNameTextView.setText(userCredentials.getDisplayName());
+            toastMessage(getString(R.string.wellcome) + " " + userCredentials.getDisplayName());
+        } else {
+            toastMessage(getString(R.string.success_sign_out));
         }
     }
+
 
     private void signOut() {
         Intent intent = new Intent(this, SignInActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        auth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            auth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -111,7 +57,7 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void toastMessage(String message){
-        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    private void toastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

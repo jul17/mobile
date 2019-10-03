@@ -17,9 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -28,7 +26,6 @@ import java.util.regex.Pattern;
 @SuppressWarnings("ALL")
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private DatabaseReference mDatabase;
     private FirebaseAuth auth;
     private EditText editTextSignUpEmail;
     private EditText editTextSignUpPassword;
@@ -49,7 +46,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editSignUpTextPhoneNumber = findViewById(R.id.sign_up_phone);
 
         auth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         findViewById(R.id.button_sign_up).setOnClickListener(this);
         findViewById(R.id.text_view_sing_in).setOnClickListener(this);
@@ -65,24 +61,39 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         if (validationSignUpFields(userName, phoneNumber, email, password, user)) {
             if (auth.getCurrentUser() != null) {
-
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
                         new OnCompleteListener<AuthResult>() {
-
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    onSuccess();
-                                    saveUserInfo(userName, phoneNumber, email);
-                                    auth.getCurrentUser();
+                                    addUsername(userName);
                                 } else {
-                                    Toast.makeText(getApplicationContext(), getString(R.string.failure),
+                                    Toast.makeText(getApplicationContext(),
+                                            getString(R.string.failure),
                                             Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
             }
+
         }
+    }
+
+    private void addUsername(String userName){
+        FirebaseUser userProfile = auth.getCurrentUser();
+        UserProfileChangeRequest userUpdateProfile = new UserProfileChangeRequest
+                .Builder().setDisplayName(userName).build();
+
+        userProfile.updateProfile(userUpdateProfile)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task1) {
+                        if (task1.isSuccessful()) {
+                            startNexActivity(WellcomeActivity.class);
+                        }
+                    }
+
+                });
     }
 
     private boolean validationSignUpFields(final String userName, final String phoneNumber,
@@ -116,31 +127,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         return alldone;
-    }
-
-    private void saveUserInfo(final String userName, final String phoneNumber, final String email) {
-
-        UserInformation userInfo = new UserInformation(userName, phoneNumber, email);
-
-        userInfo.setEmail(email);
-        userInfo.setPhonenumber(phoneNumber);
-        userInfo.setUsername(userName);
-        mDatabase.child("UserNode").child(auth.getCurrentUser().getUid()).setValue(userInfo,
-                new DatabaseReference.CompletionListener() {
-                    public void onComplete(DatabaseError databaseError,
-                                           DatabaseReference databaseReference) {
-                        if (databaseError == null) {
-                            Toast.makeText(getApplicationContext(), getString(R.string.data_saved),
-                                    Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    }
-                });
-    }
-
-    private void onSuccess() {
-        startNexActivity(WellcomeActivity.class);
-        clearFields();
     }
 
     private void clearFields() {
@@ -188,6 +174,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void startNexActivity(Class cls) {
+        clearFields();
+
         Intent intent = new Intent(this, cls);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
