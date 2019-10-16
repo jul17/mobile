@@ -22,6 +22,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private EditText editSignInEmail;
     private EditText editSignInTextPassword;
     private FirebaseAuth auth;
+    private boolean successValidation = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,20 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    private boolean validationSignInFields(final String email, final String password) {
+
+        if (!emailValidationField(email) & !passwordFieldValidation(password)) {
+            return false;
+        }
+        if (!emailValidationField(email)) {
+            return false;
+        }
+        if (!passwordFieldValidation(password)) {
+            return false;
+        }
+        return successValidation;
+    }
+
     private void onSuccess() {
         Intent intent = new Intent(this, WellcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP |
@@ -68,40 +83,37 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         clearFields();
     }
 
-
-    private void showEmailAndPawwsordErrorMessage() {
-        editSignInEmail.setError(getString(R.string.enter_email));
-        editSignInTextPassword.setError(getString(R.string.enter_password));
-        editSignInTextPassword.requestFocus();
-        editSignInEmail.requestFocus();
-    }
-
     private void startSignUpActivity() {
         Intent intent = new Intent(new Intent(this, SignUpActivity.class));
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 
-    private void clearFields() {
-        editSignInEmail.getText().clear();
-        editSignInTextPassword.getText().clear();
-    }
-
-    private boolean validationSignInFields(final String email, final String password) {
-        boolean alldone = true;
-
-        if (email.isEmpty() && password.isEmpty()) {
-            showEmailAndPawwsordErrorMessage();
+    private boolean emailValidationField(String email) {
+        if (email.isEmpty()) {
+            editSignInEmail.setError(getString(R.string.show_messg_required_email));
+            editSignInEmail.requestFocus();
             return false;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editSignInEmail.setError(getString(R.string.invalid_email));
             editSignInEmail.requestFocus();
             return false;
         }
+        return successValidation;
+    }
 
-        return alldone;
+    private boolean passwordFieldValidation(String password) {
+        if (password.isEmpty()) {
+            editSignInTextPassword.setError(getString(R.string.required_password));
+            editSignInTextPassword.requestFocus();
+            return false;
+        }
+        return successValidation;
+    }
+
+    private void clearFields() {
+        editSignInEmail.getText().clear();
+        editSignInTextPassword.getText().clear();
     }
 
     @Override

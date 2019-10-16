@@ -27,4 +27,6 @@
     <string name="success_sign_in">Successfully signed in with: </string>
     <string name="success_sign_out">Successfully signed out.</string>
     <string name="data_saved">Data is saved successfully</string>
+    <string name="invalid_email_addr">Invalid email address</string>
+    <string name="weak_password">need 8 characters</string>
 </resources>

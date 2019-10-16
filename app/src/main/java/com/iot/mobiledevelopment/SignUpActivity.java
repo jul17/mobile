@@ -1,7 +1,6 @@
 package com.iot.mobiledevelopment;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -33,6 +31,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText editSignUpTextPhoneNumber;
     private static final Integer maxPasswordLength = 8;
     private final static Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^380*.{10}");
+    private boolean successValidation = true;
 
 
     @Override
@@ -59,7 +58,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         final String password = editTextSignUpPassword.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (validationSignUpFields(userName, phoneNumber, email, password, user)) {
+        if (allFieldValidation(userName, phoneNumber, email, password)) {
             if (auth.getCurrentUser() != null) {
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this,
                         new OnCompleteListener<AuthResult>() {
@@ -79,7 +78,31 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void addUsername(String userName){
+    private boolean allFieldValidation(final String userName, final String phoneNumber,
+                                       final String email, final String password) {
+        if (!(userNameFieldvalidation(userName))
+                & !(phoneNumberValidationField(phoneNumber))
+                & !(emailValidationField(email))
+                & !(passwordFieldValidation(password))) {
+            return false;
+        }
+        if (!(userNameFieldvalidation(userName))) {
+            return false;
+        }
+        if (!(phoneNumberValidationField(phoneNumber))) {
+            return false;
+        }
+        if (!(emailValidationField(email))) {
+            return false;
+        }
+        if (!(passwordFieldValidation(password))) {
+            return false;
+        }
+
+        return successValidation;
+    }
+
+    private void addUsername(String userName) {
         FirebaseUser userProfile = auth.getCurrentUser();
         UserProfileChangeRequest userUpdateProfile = new UserProfileChangeRequest
                 .Builder().setDisplayName(userName).build();
@@ -96,38 +119,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
-    private boolean validationSignUpFields(final String userName, final String phoneNumber,
-                                           final String password, final String email, FirebaseUser user) {
-
-        boolean alldone = true;
-
-        if (email.isEmpty() && password.isEmpty() && phoneNumber.isEmpty() && userName.isEmpty()) {
-            showErrorIsEmptyFields();
-            return false;
-        } else if (email.isEmpty()) {
-            showEmailIsEmptyError();
-            return false;
-        } else if (!PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches() && password.length() < 8) {
-            showPhoneNumberErrorValidation();
-            showPasswordErrorValidation();
-            return false;
-        } else if (Objects.requireNonNull(Objects.requireNonNull(user).getEmail()).equals(email)) {
-            editTextSignUpEmail.setError(getString(R.string.show_messg_registered_user_err));
-            editTextSignUpEmail.requestFocus();
-            return false;
-        } else if (phoneNumber.isEmpty() && userName.isEmpty()) {
-            showPhoneNumberErrorIsEmpty();
-            showUseNameIsEmptyError();
-            return false;
-        } else if (userName.isEmpty()) {
-            showUseNameIsEmptyError();
-            return false;
-        } else if (password.length() < maxPasswordLength) {
-            showPasswordErrorValidation();
-        }
-
-        return alldone;
-    }
 
     private void clearFields() {
         editTextSignUpUserName.getText().clear();
@@ -136,49 +127,62 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         editTextSignUpPassword.getText().clear();
     }
 
-    private void showErrorIsEmptyFields() {
-        editTextSignUpEmail.setError(getString(R.string.show_messg_required_email));
-        editTextSignUpPassword.setError(getString(R.string.required_password));
-        editTextSignUpUserName.setError(getString(R.string.show_messg_required_name));
-        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_required_phone));
-        editTextSignUpEmail.requestFocus();
-        editTextSignUpPassword.requestFocus();
-        editSignUpTextPhoneNumber.requestFocus();
-        editTextSignUpUserName.requestFocus();
-    }
-
-    private void showUseNameIsEmptyError() {
-        editTextSignUpUserName.setError(getString(R.string.show_messg_required_name));
-        editTextSignUpUserName.requestFocus();
-    }
-
-    private void showPhoneNumberErrorIsEmpty() {
-        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_required_phone));
-        editSignUpTextPhoneNumber.requestFocus();
-    }
-
-    private void showEmailIsEmptyError() {
-        editTextSignUpEmail.setError(getString(R.string.show_messg_required_email));
-        editTextSignUpEmail.requestFocus();
-    }
-
-
-    private void showPhoneNumberErrorValidation() {
-        editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_wrong_phone));
-        editSignUpTextPhoneNumber.requestFocus();
-    }
-
-    private void showPasswordErrorValidation() {
-        editTextSignUpPassword.setError(getString(R.string.show_messg_wrong_phone));
-        editTextSignUpPassword.requestFocus();
-    }
-
     private void startNexActivity(Class cls) {
         clearFields();
 
         Intent intent = new Intent(this, cls);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+
+    private boolean userNameFieldvalidation(String userName) {
+        if (userName.isEmpty()) {
+            editTextSignUpUserName.setError(getString(R.string.show_messg_required_name));
+            editTextSignUpUserName.requestFocus();
+            return false;
+        }
+        return successValidation;
+    }
+
+    private boolean phoneNumberValidationField(String phoneNumber) {
+        if (phoneNumber.isEmpty()) {
+            editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_required_phone));
+            editSignUpTextPhoneNumber.requestFocus();
+            return false;
+        } else if (!PHONE_NUMBER_PATTERN.matcher(phoneNumber).matches()) {
+            editSignUpTextPhoneNumber.setError(getString(R.string.show_messg_wrong_phone));
+            editSignUpTextPhoneNumber.requestFocus();
+            return false;
+        }
+        return successValidation;
+    }
+
+    private boolean emailValidationField(String email) {
+        if (email.isEmpty()) {
+            editTextSignUpEmail.setError(getString(R.string.show_messg_required_email));
+            editTextSignUpEmail.requestFocus();
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextSignUpEmail.setError(getString(R.string.invalid_email));
+            editTextSignUpEmail.requestFocus();
+            return false;
+        }
+
+
+        return successValidation;
+    }
+
+    private boolean passwordFieldValidation(String password) {
+        if (password.isEmpty()) {
+            editTextSignUpPassword.setError(getString(R.string.required_password));
+            editTextSignUpPassword.requestFocus();
+            return false;
+        } else if (password.length() < maxPasswordLength) {
+            editTextSignUpPassword.setError(getString(R.string.weak_password));
+            editTextSignUpPassword.requestFocus();
+            return false;
+        }
+        return successValidation;
     }
 
     @Override
