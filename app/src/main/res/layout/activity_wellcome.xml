@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:paddingLeft="100dp"
+    android:paddingTop="280dp"
+    android:paddingRight="100dp"
+    android:textColor="@color/white"
+    tools:context=".WellcomeActivity">
+
+    <TextView
+        android:id="@+id/welcome_text_view"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/wellcome"
+        android:textColor="@color/white" />
+
+
+    <TextView
+        android:id="@+id/wellcome_name_text_view"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/white"  />
+
+    <TextView
+        android:id="@+id/wellcome_email_text_view"
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/wellcome_sign_out_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/buttn_background"
+        android:textColor="@color/white"
+        android:text="Sign out"
+        tools:ignore="HardcodedText" />
+
+
+
+</LinearLayout>

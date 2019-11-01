@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MobileDevelopment</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="password">password</string>
+    <string name="Email" />
+    <string name="Password" />
+    <string name="MobileDevelopment" />
+    <string name="don_t_have_account_sign_up">Don\'t have account? Sign Up</string>
+    <string name="sign_in">Sign in</string>
+    <string name="email" />
+    <string name="wellcome">Wellcome</string>
+    <string name="name">name</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="failure">Failure!</string>
+    <string name="success">Success Authorisation</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter password</string>
+    <string name="show_messg_invalid_email_address">Invalid email address</string>
+    <string name="show_messg_registered_user_err">This user is already registread</string>
+    <string name="show_messg_required_email">Email is required</string>
+    <string name="required_password">Password is required</string>
+    <string name="show_messg_required_name">User name is required</string>
+    <string name="show_messg_required_phone">Phone number is required</string>
+    <string name="show_messg_wrong_phone">Wrong phone number</string>
+    <string name="show_messg_passw_error">Minimim length of password should be 8</string>
+    <string name="success_sign_in">Successfully signed in with: </string>
+    <string name="success_sign_out">Successfully signed out.</string>
+    <string name="data_saved">Data is saved successfully</string>
+    <string name="invalid_email_addr">Invalid email address</string>
+    <string name="weak_password">need 8 characters</string>
+</resources>
