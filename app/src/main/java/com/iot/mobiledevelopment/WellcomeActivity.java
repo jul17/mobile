@@ -1,23 +1,30 @@
 package com.iot.mobiledevelopment;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 @SuppressWarnings("ALL")
 public class WellcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private FirebaseAuth auth;
-    private TextView showUserNameTextView;
-    private TextView showUserEmailTextView;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private CustomAdapter adapter;
+    private RecyclerView recyclerView;
+    private ProgressDialog progressDialog;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout linearLayout;
+
 
 
     @Override
@@ -25,20 +32,57 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wellcome);
 
-        showUserEmailTextView = findViewById(R.id.wellcome_email_text_view);
-        showUserNameTextView = findViewById(R.id.wellcome_name_text_view);
         findViewById(R.id.wellcome_sign_out_button).setOnClickListener(this);
-
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser userCredentials = auth.getCurrentUser();
-        if (userCredentials != null) {
-            showUserEmailTextView.setText(userCredentials.getEmail());
-            showUserNameTextView.setText(userCredentials.getDisplayName());
-            toastMessage(getString(R.string.wellcome) + " " + userCredentials.getDisplayName());
-        } else {
-            toastMessage(getString(R.string.success_sign_out));
-        }
+        initViews();
+        loadMovies();
     }
+
+    private void initViews() {
+        recyclerView = findViewById(R.id.data_list_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        View linearLayout = findViewById(R.id.linearLayout);
+        swipeRefreshLayout = findViewById(R.id.data_list_swipe_refresh);
+        doSwipeToRefresh();
+    }
+
+
+    private void loadMovies(){
+        swipeRefreshLayout.setRefreshing(true);
+        final MovieApi apiService = RetrofitClientInstance.getRetrofitInstance().create(MovieApi.class);
+        final Call<List<Movie>> call = apiService.getAllMovies();
+
+
+        call.enqueue(new Callback<List<Movie>>() {
+            @Override
+            public void onResponse(final Call<List<Movie>> call,
+                                   final Response<List<Movie>> response) {
+                adapter = new CustomAdapter(getApplication(), response.body());
+                recyclerView.setAdapter(adapter);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(Call<List<Movie>> call, Throwable t) {
+                toastMessage("Faiure");
+            }
+        });
+    }
+
+    private void doSwipeToRefresh(){
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        loadMovies();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+    }
+
+
 
 
     private void signOut() {
