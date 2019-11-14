@@ -44,7 +44,7 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
         recyclerView = findViewById(R.id.welcome_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        View linearLayout = findViewById(R.id.linearLayout);
+        linearLayout = findViewById(R.id.linearLayout);
         swipeRefreshLayout = findViewById(R.id.welcome_swipe_refresh);
         setupSwipeToRefresh();
     }
