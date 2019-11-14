@@ -15,12 +15,12 @@
     android:id="@+id/linearLayout">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/data_list_swipe_refresh"
+        android:id="@+id/welcome_swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="600dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/data_list_recycler_view"
+            android:id="@+id/welcome_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
