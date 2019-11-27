@@ -29,4 +29,6 @@
     <string name="data_saved">Data is saved successfully</string>
     <string name="invalid_email_addr">Invalid email address</string>
     <string name="weak_password">need 8 characters</string>
+    <string name="icon">Icon</string>
+    <string name="icon_2">Icon</string>
 </resources>
