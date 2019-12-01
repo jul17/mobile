@@ -76,9 +76,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void onSuccess() {
-        Intent intent = new Intent(this, WellcomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                Intent.FLAG_ACTIVITY_NO_HISTORY);
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP );
         startActivity(intent);
         clearFields();
     }

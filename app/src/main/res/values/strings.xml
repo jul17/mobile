@@ -31,4 +31,31 @@
     <string name="weak_password">need 8 characters</string>
     <string name="icon">Icon</string>
     <string name="icon_2">Icon</string>
+    <string name="monday">Monday</string>
+    <string name="movies">Movies</string>
+    <string name="tab2">Tab2</string>
+    <string name="profile">Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="laxman_marothiya">Laxman Marothiya</string>
+    <string name="surat">Surat</string>
+    <string name="adhyaksh">(Adhyaksh)</string>
+    <string name="todo">TODO</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="new_email">New email</string>
+    <string name="user_avatar">user avatar</string>
+    <string name="new_username">New user name</string>
+    <string name="load_button">Load Image</string>
+    <string name="edit_button">save email</string>
+    <string name="sign_out_btn">Sign Out</string>
+    <string name="img_load_succes">image load Success</string>
+    <string name="email_update_s">Email update Success</string>
+    <string name="email_update_fail">Email update Failure</string>
+    <string name="invalid_new_email">invalid email</string>
+    <string name="invalid_name">invalid user name</string>
+    <string name="user_name_update_success">User name Update Success</string>
+    <string name="user_name_update_fail">User name Update Failure</string>
 </resources>

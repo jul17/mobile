@@ -3,6 +3,7 @@ package com.iot.mobiledevelopment;
 import android.app.Application;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -11,6 +12,7 @@ public class App extends Application {
 
     private MovieApi movieService;
     private FirebaseAuth auth;
+    private FirebaseUser user;
 
     public void onCreate()
     {
@@ -18,6 +20,8 @@ public class App extends Application {
         auth = FirebaseAuth.getInstance();
         movieService = createMovieApiService();
     }
+
+    public FirebaseUser getUser() { return user; }
 
     public FirebaseAuth getAuth(){
         return auth;

@@ -1,12 +1,16 @@
 package com.iot.mobiledevelopment;
 
+
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -14,38 +18,50 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-@SuppressWarnings("ALL")
-public class WellcomeActivity extends AppCompatActivity implements View.OnClickListener {
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MoviesFragment extends Fragment implements CustomAdapter.OnItemListener {
+
+    public static final String EXTRA_URL = "imageUrl";
+    public static final String EXTRA_TITTLE = "title";
+    public static final String EXTRA_DESCRIPTION = "description";
+    public static final String EXTRA_YEAR = "year";
 
     private CustomAdapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout linearLayout;
+    private View movieFragment;
 
+    public MoviesFragment() {}
 
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wellcome);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        movieFragment = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        findViewById(R.id.wellcome_sign_out_button).setOnClickListener(this);
         initViews();
         loadMovies();
         registerNetworkMonitoring();
+
+        return movieFragment;
     }
 
     private void initViews() {
-        recyclerView = findViewById(R.id.welcome_recycler_view);
+        recyclerView = movieFragment.findViewById(R.id.welcome_recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        linearLayout = findViewById(R.id.linearLayout);
-        swipeRefreshLayout = findViewById(R.id.welcome_swipe_refresh);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayout = movieFragment.findViewById(R.id.movie_fr_linearLayout);
+        swipeRefreshLayout = movieFragment.findViewById(R.id.welcome_swipe_refresh);
         setupSwipeToRefresh();
     }
 
@@ -54,7 +70,7 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
         swipeRefreshLayout.setRefreshing(true);
         final MovieApi apiService = getApplicationEx().getMovieService();
         final Call<List<Movie>> call = apiService.getAllMovies();
-
+        final CustomAdapter.OnItemListener fragment = this;
 
         call.enqueue(new Callback<List<Movie>>() {
             @Override
@@ -62,6 +78,8 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
                                    final Response<List<Movie>> response) {
                 adapter = new CustomAdapter(response.body());
                 recyclerView.setAdapter(adapter);
+                CustomAdapter.setOnItemListener(fragment);
+                adapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
 
@@ -88,25 +106,24 @@ public class WellcomeActivity extends AppCompatActivity implements View.OnClickL
     private void registerNetworkMonitoring() {
         IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         NetworkChangeReceiver receiver = new NetworkChangeReceiver(linearLayout);
-        this.registerReceiver(receiver, filter);
-    }
-
-    private void signOut() {
-        Intent intent = new Intent(this, SignInActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.wellcome_sign_out_button:
-                signOut();
-                break;
-        }
+        getActivity().registerReceiver(receiver, filter);
     }
 
     private App getApplicationEx(){
-        return ((App) getApplication());
+        return ((App) Objects.requireNonNull(getActivity()).getApplication());
     }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        Movie clickedItem = adapter.getMovieList().get(position);
+
+        intent.putExtra(EXTRA_URL, clickedItem.getPoster());
+        intent.putExtra(EXTRA_TITTLE, clickedItem.getTitle());
+        intent.putExtra(EXTRA_YEAR, clickedItem.getYear());
+        intent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
+
+        startActivity(intent);
+    }
+
 }

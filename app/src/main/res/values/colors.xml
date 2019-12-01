@@ -7,4 +7,5 @@
     <color name="buttn_background">#894ADD</color>
     <color name="activity_background">#A373E6</color>
     <color name="border">#4f3565</color>
+    <color name="tab_layout_back">#865BDB</color>
 </resources>
