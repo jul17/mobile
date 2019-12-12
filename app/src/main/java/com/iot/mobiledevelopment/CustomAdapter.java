@@ -1,6 +1,5 @@
 package com.iot.mobiledevelopment;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +16,15 @@ import java.util.List;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
 
     private List<Movie> movieList;
-    private Context context;
 
     private static OnItemListener mOnItemListener;
 
-
     public interface OnItemListener{
-
         void onItemClick(int position);
     }
 
-    public static void setOnItemListener(OnItemListener listener) {
-        CustomAdapter.mOnItemListener = listener;
+    public void setOnItemListener(OnItemListener listener) {
+        mOnItemListener = listener;
     }
 
 
@@ -42,11 +38,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
 
     @NonNull
     @Override
-    public CustomAdapter.CustomViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
+    public CustomAdapter.CustomViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                             final int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_view, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_view, parent,
+                false);
         CustomViewHolder customViewHolder = new CustomViewHolder(view);
-
         return customViewHolder;
     }
 
@@ -55,8 +52,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         holder.textTitle.setText(movieList.get(position).getTitle());
         holder.textDesctiption.setText(movieList.get(position).getDescription());
         Picasso.get().load(movieList.get(position).getPoster()).into(holder.poster);
-        holder.movieYear.setText(String.format("Year: %s", Integer.toString(movieList.get(position).getYear())));
-
+        holder.movieYear.setText(String.format("Year: %s", Integer.toString(movieList
+                .get(position).getYear())));
     }
 
     @Override
