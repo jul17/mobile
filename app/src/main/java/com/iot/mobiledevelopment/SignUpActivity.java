@@ -1,15 +1,14 @@
 package com.iot.mobiledevelopment;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -102,6 +101,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         return successValidation;
     }
 
+
+    private void clearFields() {
+        editTextSignUpUserName.getText().clear();
+        editSignUpTextPhoneNumber.getText().clear();
+        editTextSignUpEmail.getText().clear();
+        editTextSignUpPassword.getText().clear();
+    }
+
     private void addUsername(String userName) {
         FirebaseUser userProfile = auth.getCurrentUser();
         UserProfileChangeRequest userUpdateProfile = new UserProfileChangeRequest
@@ -112,19 +119,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<Void> task1) {
                         if (task1.isSuccessful()) {
-                            startNexActivity(WellcomeActivity.class);
+                            startNexActivity(WelcomeActivity.class);
                         }
                     }
 
                 });
-    }
-
-
-    private void clearFields() {
-        editTextSignUpUserName.getText().clear();
-        editSignUpTextPhoneNumber.getText().clear();
-        editTextSignUpEmail.getText().clear();
-        editTextSignUpPassword.getText().clear();
     }
 
     private void startNexActivity(Class cls) {
