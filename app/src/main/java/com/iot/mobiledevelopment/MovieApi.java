@@ -7,6 +7,6 @@ import retrofit2.http.GET;
 
 public interface MovieApi {
 
-    @GET("/custom_movies/")
+    @GET("/movies/")
     Call<List<Movie>> getAllMovies();
 }

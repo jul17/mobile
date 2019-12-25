@@ -2,7 +2,6 @@ package com.iot.mobiledevelopment;
 
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,7 @@ public class MoviesFragment extends Fragment implements CustomAdapter.OnItemList
     public static final String EXTRA_TITTLE = "title";
     public static final String EXTRA_DESCRIPTION = "description";
     public static final String EXTRA_YEAR = "year";
+    private static final String TAG = "hello";
 
     private CustomAdapter adapter;
     private RecyclerView recyclerView;
@@ -51,8 +51,6 @@ public class MoviesFragment extends Fragment implements CustomAdapter.OnItemList
 
         initViews();
         loadMovies();
-        registerNetworkMonitoring();
-
         return movieFragment;
     }
 
@@ -78,7 +76,7 @@ public class MoviesFragment extends Fragment implements CustomAdapter.OnItemList
                                    final Response<List<Movie>> response) {
                 adapter = new CustomAdapter(response.body());
                 recyclerView.setAdapter(adapter);
-                CustomAdapter.setOnItemListener(fragment);
+                adapter.setOnItemListener(fragment);
                 adapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
             }
@@ -103,12 +101,6 @@ public class MoviesFragment extends Fragment implements CustomAdapter.OnItemList
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
-    private void registerNetworkMonitoring() {
-        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        NetworkChangeReceiver receiver = new NetworkChangeReceiver(linearLayout);
-        getActivity().registerReceiver(receiver, filter);
-    }
-
     private App getApplicationEx(){
         return ((App) Objects.requireNonNull(getActivity()).getApplication());
     }
@@ -122,7 +114,6 @@ public class MoviesFragment extends Fragment implements CustomAdapter.OnItemList
         intent.putExtra(EXTRA_TITTLE, clickedItem.getTitle());
         intent.putExtra(EXTRA_YEAR, clickedItem.getYear());
         intent.putExtra(EXTRA_DESCRIPTION, clickedItem.getDescription());
-
         startActivity(intent);
     }
 
